@@ -1,0 +1,55 @@
+﻿.row{
+    padding-top: 20px;
+}
+    .row .course {
+        list-style: none
+    }
+
+        .row .course > li {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .row .course > li .date {
+                text-align: center;
+                background-color: #6EB5F5;
+                color: white;
+                width: 60px;
+                border-radius: 8px
+            }
+
+            .row .course > li .details {
+                position: absolute;
+                top: 0;
+                left: 70px
+            }
+
+                .row .course > li .details .btn btn-default btn-sm js-toggle-follow {
+                    color: ActiveBorder;
+                    border: none
+                }
+
+.navbar-inverse {
+    background-color: #FFA923;
+    border-color: white;
+}
+    .navbar-inverse .navbar-brand,
+    .navbar-inverse .navbar-nav > li > a {
+        color: white
+    }
+/*
+.div-middle {
+    text-align: center
+}
+    .div-middle .formfield{
+        margin: 0 auto;
+        width: 50%;
+    }
+        .div-middle .formfield form{
+        text-align: left;
+    }
+
+    form select,
+    form input {
+        margin: 0 auto
+    }*/
