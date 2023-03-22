@@ -1,12 +1,14 @@
 ﻿@model BigSchool.ViewModels.CourseViewModel
 @{
-    ViewBag.Title = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Delete";
 }
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
 <div class="div-middle">
-    <h2>Edit</h2>
     <div class="formfield">
-        @using (Html.BeginForm("Edit", "Courses"))
+        @using (Html.BeginForm("Delete", "Courses"))
         {
             @Html.AntiForgeryToken()
             <div class="form-group">
@@ -29,10 +31,8 @@
                 @Html.DropDownListFor(m => m.CategoryId, new SelectList(Model.Categories, "Id", "Name"), "", new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.CategoryId)
             </div>
-            <button type="submit" value="Save" class="btn btn-primary">Save</button>
+            <input type="submit" value="Delete" class="btn btn-default" />
+            @Html.ActionLink("Back to List", "Index")
         }
     </div>
-
 </div>
-@section scripts{
-    @Scripts.Render("~/bundles/jqueryval");}

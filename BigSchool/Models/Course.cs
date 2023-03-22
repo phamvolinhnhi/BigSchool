@@ -25,5 +25,9 @@ namespace BigSchool.Models
         [Required]
         public byte CategoryId { get; set; }
 
+        public bool isShowGoing = false;
+
+        public bool isCanceled { get; set; }
+
     }
 }

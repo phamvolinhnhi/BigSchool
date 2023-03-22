@@ -4,31 +4,27 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
-using System.Web.Mvc;
 
 namespace BigSchool.Controllers
 {
+    [Authorize]
     public class FollowingController : ApiController
     {
-        // GET: Following
         private readonly ApplicationDbContext context;
         public FollowingController()
         {
             context = new ApplicationDbContext();
         }
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
 
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         public IHttpActionResult Follow(FollowingDto followingDto)
         {
             var userId = User.Identity.GetUserId();
-                if (context.Followings.Any(f => f.FollowerId == userId && f.FolloweeId == followingDto.FolloweeId))
-                    return BadRequest("Following already exists!");
+            if (context.Followings.Any(f => f.FollowerId == userId && f.FolloweeId == followingDto.FolloweeId))
+                return BadRequest("Following already exists!");
             var following = new Following
             {
                 FollowerId = userId,
@@ -38,5 +34,6 @@ namespace BigSchool.Controllers
             context.SaveChanges();
             return Ok();
         }
+
     }
 }

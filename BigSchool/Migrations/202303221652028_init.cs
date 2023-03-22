@@ -3,34 +3,22 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialModel : DbMigration
+    public partial class init : DbMigration
     {
         public override void Up()
         {
             CreateTable(
-                "dbo.Categories",
+                "dbo.Attendances",
                 c => new
                     {
-                        Id = c.Byte(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 255),
+                        CourseId = c.Int(nullable: false),
+                        AttendeeId = c.String(nullable: false, maxLength: 128),
                     })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.Courses",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        LecturerId = c.String(nullable: false, maxLength: 128),
-                        Place = c.String(nullable: false, maxLength: 255),
-                        DateTime = c.DateTime(nullable: false),
-                        CategoryId = c.Byte(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Categories", t => t.CategoryId, cascadeDelete: true)
-                .ForeignKey("dbo.AspNetUsers", t => t.LecturerId, cascadeDelete: true)
-                .Index(t => t.LecturerId)
-                .Index(t => t.CategoryId);
+                .PrimaryKey(t => new { t.CourseId, t.AttendeeId })
+                .ForeignKey("dbo.AspNetUsers", t => t.AttendeeId, cascadeDelete: true)
+                .ForeignKey("dbo.Courses", t => t.CourseId)
+                .Index(t => t.CourseId)
+                .Index(t => t.AttendeeId);
             
             CreateTable(
                 "dbo.AspNetUsers",
@@ -67,6 +55,19 @@
                 .Index(t => t.UserId);
             
             CreateTable(
+                "dbo.Followings",
+                c => new
+                    {
+                        FollowerId = c.String(nullable: false, maxLength: 128),
+                        FolloweeId = c.String(nullable: false, maxLength: 128),
+                    })
+                .PrimaryKey(t => new { t.FollowerId, t.FolloweeId })
+                .ForeignKey("dbo.AspNetUsers", t => t.FollowerId)
+                .ForeignKey("dbo.AspNetUsers", t => t.FolloweeId)
+                .Index(t => t.FollowerId)
+                .Index(t => t.FolloweeId);
+            
+            CreateTable(
                 "dbo.AspNetUserLogins",
                 c => new
                     {
@@ -92,6 +93,32 @@
                 .Index(t => t.RoleId);
             
             CreateTable(
+                "dbo.Courses",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        LecturerId = c.String(nullable: false, maxLength: 128),
+                        Place = c.String(nullable: false, maxLength: 255),
+                        DateTime = c.DateTime(nullable: false),
+                        CategoryId = c.Byte(nullable: false),
+                        isCanceled = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Categories", t => t.CategoryId, cascadeDelete: true)
+                .ForeignKey("dbo.AspNetUsers", t => t.LecturerId, cascadeDelete: true)
+                .Index(t => t.LecturerId)
+                .Index(t => t.CategoryId);
+            
+            CreateTable(
+                "dbo.Categories",
+                c => new
+                    {
+                        Id = c.Byte(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 255),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.AspNetRoles",
                 c => new
                     {
@@ -106,26 +133,36 @@
         public override void Down()
         {
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
+            DropForeignKey("dbo.Attendances", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Courses", "LecturerId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Courses", "CategoryId", "dbo.Categories");
+            DropForeignKey("dbo.Attendances", "AttendeeId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Followings", "FolloweeId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Followings", "FollowerId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Courses", "CategoryId", "dbo.Categories");
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
+            DropIndex("dbo.Courses", new[] { "CategoryId" });
+            DropIndex("dbo.Courses", new[] { "LecturerId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
+            DropIndex("dbo.Followings", new[] { "FolloweeId" });
+            DropIndex("dbo.Followings", new[] { "FollowerId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
-            DropIndex("dbo.Courses", new[] { "CategoryId" });
-            DropIndex("dbo.Courses", new[] { "LecturerId" });
+            DropIndex("dbo.Attendances", new[] { "AttendeeId" });
+            DropIndex("dbo.Attendances", new[] { "CourseId" });
             DropTable("dbo.AspNetRoles");
+            DropTable("dbo.Categories");
+            DropTable("dbo.Courses");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
+            DropTable("dbo.Followings");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
-            DropTable("dbo.Courses");
-            DropTable("dbo.Categories");
+            DropTable("dbo.Attendances");
         }
     }
 }

@@ -1,31 +1,21 @@
-﻿@model BigSchool.ViewModels.CourseViewModel
+﻿@model BigSchool.ViewModels.FollowingViewModel
 @{
     ViewBag.Title = "Attending";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 <ul class="course">
-    @foreach (var course in Model.UpcommingCourses)
+    @foreach (var lecturer in Model.Lecturer)
     {
         <li>
-            <div class="date">
-                <div class="time">
-                    @course.DateTime.ToString("hh:mm")
-                </div>
-                <div class="day">
-                    @course.DateTime.ToString("dd")
-                </div>
-                <div class="month">
-                    @course.DateTime.ToString("MM")
-                </div>
-            </div>
             <div class="details">
                 <span class="lecturer">
-                    @course.Lecturer.Name
-                </span>
-                <br />
-                <span class="category">
-                    @course.Category.Name
+                    @lecturer.Email
+                    @lecturer.Name
+                    @if (Model.ShowAction)
+                    {
+                        <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@lecturer.Id">Follow</button>
+                    }
                 </span>
             </div>
         </li>
