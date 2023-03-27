@@ -20,11 +20,6 @@ namespace BigSchool.Controllers
         }
         public ActionResult Index()
         {
-            //var upcommingCourses = _dbContext.Courses
-            //    .Include(c => c.Lecturer)
-            //    .Include(c => c.Category)
-            //    .Where(c => c.DateTime > DateTime.Now);
-            //return View(upcommingCourses);
             var loginUser = User.Identity.GetUserId();
             ViewBag.LoginUser = loginUser;
             var upcommingCourses = _dbContext.Courses.OrderBy(p => p.DateTime)
@@ -32,6 +27,15 @@ namespace BigSchool.Controllers
                 .Include(c => c.Category)
                 .ToList()
                 .Where(c => c.DateTime > DateTime.Now && c.isCanceled != true);
+            foreach(Course i in upcommingCourses)
+            {
+                Attendance find = _dbContext.Attendances.FirstOrDefault(p => p.CourseId == i.Id && p.AttendeeId == loginUser);
+                Following findF = _dbContext.Followings.FirstOrDefault(p => p.FolloweeId == i.LecturerId && p.FollowerId == loginUser);
+                if(findF != null)
+                    i.Lecturer.isFollowing = true;
+                if(find != null)
+                    i.isShowGoing = true;
+            }
             var viewModel = new CourseViewModel
             {
                 UpcommingCourses = upcommingCourses,

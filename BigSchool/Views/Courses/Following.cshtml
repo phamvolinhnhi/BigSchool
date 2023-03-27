@@ -8,46 +8,11 @@
     @foreach (var lecturer in Model.Lecturer)
     {
         <li>
-            <div class="details">
-                <span class="lecturer">
-                    @lecturer.Email
-                    @lecturer.Name
-                    @if (Model.ShowAction)
-                    {
-                        <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@lecturer.Id">Follow</button>
-                    }
-                </span>
-            </div>
+            <span class="lecturer">
+                @lecturer.Email
+                -
+                @lecturer.Name
+            </span>
         </li>
     }
 </ul>
-@section scripts
-{
-    <script>
-        $(document).ready(function () {
-            $(".js-toggle-attendance").click(function (e) {
-                var button = $(e.target);
-                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
-                    .done(function () {
-                        button
-                            .removeClass("btn-default")
-                            .addClass("btn-info")
-                            .text("Going");
-                    })
-                    .fail(function () {
-                        alert("Something failed!");
-                    });
-            });
-            $(".js-toggle-follow").click(function (e) {
-                var button = $(e.target);
-                $.post("/api/followings", { followeeId: button.attr("data-user-id") })
-                    .done(function () {
-                        button.text("Following");
-                    })
-                    .fail(function () {
-                        alert("Something failed");
-                    });
-            });
-        });
-    </script>
-}

@@ -22,12 +22,20 @@
             <div class="details">
                 <span class="lecturer">
                     @course.Lecturer.Name
-                    @if (ViewBag.LoginUser != null)
+                    @if (ViewBag.LoginUser != null && course.LecturerId != ViewBag.LoginUser)
                     {
-                        if (Model.ShowAction)
+                        if (!course.Lecturer.isFollowing)
                         {
                             <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Follow</button>
                         }
+                        else
+                        {
+                            <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Following</button>
+                        }
+                        @*if (Model.ShowAction)
+                        {
+                            <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Follow</button>
+                        }*@
                     }
                 </span>
                 
@@ -35,9 +43,9 @@
                 <span class="category">
                     @course.Category.Name
                 </span>
-                @if (ViewBag.LoginUser != null)
+                @if (ViewBag.LoginUser != null && course.LecturerId != ViewBag.LoginUser)
                 {
-                    if (course.isShowGoing)
+                    if (!course.isShowGoing)
                     {
                         <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance">Going?</button>
 
@@ -65,7 +73,7 @@
                             .text("Going");
                     })
                     .fail(function () {
-                        alert("Something failed!");
+                        alert("Khóa học này đã đăng ký rồi, vui lòng chọn khóa học khác!");
                     });
             });
             $(".js-toggle-follow").click(function (e) {
@@ -75,7 +83,7 @@
                         button.text("Following");
                     })
                     .fail(function () {
-                        alert("Something failed");
+                        alert("Đã theo dõi giảng viên này rồi!");
                     });
             });
         });

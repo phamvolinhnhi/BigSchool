@@ -15,6 +15,8 @@ namespace BigSchool.Models
         [Required]
         [StringLength(255)]
         public string Name { get; set; }
+
+        public bool isFollowing = false;
         public ICollection<Following> Followers { get; set; }
         public ICollection<Following> Followees { get; set; }
         public ApplicationUser() { 

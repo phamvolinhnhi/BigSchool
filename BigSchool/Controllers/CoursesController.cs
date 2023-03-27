@@ -62,6 +62,12 @@ namespace BigSchool.Controllers
                 .Include(l => l.Lecturer)
                 .Include(l => l.Category)
                 .ToList();
+            foreach (Course i in courses)
+            {
+                Following findF = _dbContext.Followings.FirstOrDefault(p => p.FolloweeId == i.LecturerId && p.FollowerId == userId);
+                if (findF != null)
+                    i.Lecturer.isFollowing = true;
+            }
             var viewModel = new CourseViewModel
             {
                 UpcommingCourses = courses,

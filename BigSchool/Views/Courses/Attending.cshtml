@@ -22,6 +22,14 @@
             <div class="details">
                 <span class="lecturer">
                     @course.Lecturer.Name
+                    @if (!course.Lecturer.isFollowing)
+                    {
+                    <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Follow</button>
+                    }
+                    else
+                    {
+                    <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Following</button>
+                    }
                 </span>
                 <br />
                 <span class="category">
@@ -35,19 +43,7 @@
 {
     <script>
         $(document).ready(function () {
-            $(".js-toggle-attendance").click(function (e) {
-                var button = $(e.target);
-                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
-                    .done(function () {
-                        button
-                            .removeClass("btn-default")
-                            .addClass("btn-info")
-                            .text("Going");
-                    })
-                    .fail(function () {
-                        alert("Something failed!");
-                    });
-            });
+            
             $(".js-toggle-follow").click(function (e) {
                 var button = $(e.target);
                 $.post("/api/followings", { followeeId: button.attr("data-user-id") })
@@ -55,7 +51,7 @@
                         button.text("Following");
                     })
                     .fail(function () {
-                        alert("Something failed");
+                        alert("Đã theo dõi giảng viên này rồi!");
                     });
             });
         });
