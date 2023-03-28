@@ -1,18 +1,136 @@
-﻿@model BigSchool.ViewModels.FollowingViewModel
+﻿@model BigSchool.ViewModels.CourseViewModel
 @{
-    ViewBag.Title = "Attending";
+    ViewBag.Title = "Following";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 <ul class="course">
-    @foreach (var lecturer in Model.Lecturer)
+    @foreach (var course in Model.UpcommingCourses)
     {
         <li>
-            <span class="lecturer">
-                @lecturer.Email
-                -
-                @lecturer.Name
-            </span>
+            <div class="date">
+                <div class="time">
+                    @course.DateTime.ToString("hh:mm")
+                </div>
+                <div class="day">
+                    @course.DateTime.ToString("dd")
+                </div>
+                <div class="month">
+                    @course.DateTime.ToString("MM")
+                </div>
+            </div>
+            <div class="details">
+                <span class="lecturer">
+                    @course.Lecturer.Name
+                    @if (course.Lecturer.isFollowing)
+                    {
+                        <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Follow</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Following</button>
+                    }
+                    @*if (Model.ShowAction)
+                        {
+                            <button class="btn btn-default btn-sm js-toggle-follow" data-user-id="@course.LecturerId">Follow</button>
+                        }*@
+                </span>
+
+                <br />
+                <span class="category">
+                    @course.Category.Name
+                </span>
+                @if (!course.isShowGoing)
+                {
+                    <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance">Going?</button>
+
+                }
+                else
+                {
+                    <button data-course-id="@course.Id" class="btn btn-info btn-sm js-toggle-attendance">Going</button>
+                }
+
+            </div>
         </li>
     }
 </ul>
+@section scripts
+{
+    <script>
+        function handleException(request, message, error) {
+            var msg = "";
+            msg += "Code: " + request.status + "\n";
+            msg += "Text: " + request.statusText + "\n";
+            if (request.responseJSON != null) {
+                msg += "Message: " +
+                    request.responseJSON.Message + "\n";
+            }
+            //var msg = "";
+
+            //switch (request.status) {
+            //    case 500:
+            //        // Display error message thrown from the server
+            //        msg = request.responseJSON.ExceptionMessage;
+            //        break;
+
+            //    case 400:
+            //        // 'Bad Request' means we are throwing back
+            //        // model state errors
+            //        var errors = [];
+
+            //        errors = getModelStateErrors(request.responseText);
+
+            //        for (var i = 0; i < errors.length; i++) {
+            //            msg += errors[i] + "\n";
+            //        }
+
+            //        break;
+
+            //    case 404:
+            //        // 'Not Found' means the data you are requesting
+            //        //  cannot be found in the database
+
+            //        msg = "The Product you were requesting could not be found";
+
+            //        break;
+
+            //    default:
+            //        msg = "Status: " + request.status;
+            //        msg += "\n" + "Error Message: " +
+            //            request.statusText;
+            //        break;
+            //}
+            alert(msg);
+        };
+        $(document).ready(function () {
+            $(".js-toggle-attendance").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    })
+                    //.fail(function () {
+                    //    alert("Khóa học này đã đăng ký rồi, vui lòng chọn khóa học khác!");
+                    //});
+                    .fail(function (request, message, error) {
+                        handleException(request, message, error);
+                    });
+            });
+            $(".js-toggle-follow").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/following", { followeeId: button.attr("data-user-id") })
+                    .done(function () {
+                        location.reload();
+                        return false;
+                        /*button.text("Following");*/
+                    })
+                    .fail(function (request, message, error) {
+                        handleException(request, message, error);
+                    });
+            });
+        });
+    </script>
+}

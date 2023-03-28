@@ -36,28 +36,81 @@
     }
 </ul>
 
-@section scripts{
+@section scripts
+{
     <script>
+        function handleException(request, message, error) {
+            var msg = "";
+            msg += "Code: " + request.status + "\n";
+            msg += "Text: " + request.statusText + "\n";
+            if (request.responseJSON != null) {
+                msg += "Message: " +
+                    request.responseJSON.Message + "\n";
+            }
+            //var msg = "";
+
+            //switch (request.status) {
+            //    case 500:
+            //        // Display error message thrown from the server
+            //        msg = request.responseJSON.ExceptionMessage;
+            //        break;
+
+            //    case 400:
+            //        // 'Bad Request' means we are throwing back
+            //        // model state errors
+            //        var errors = [];
+
+            //        errors = getModelStateErrors(request.responseText);
+
+            //        for (var i = 0; i < errors.length; i++) {
+            //            msg += errors[i] + "\n";
+            //        }
+
+            //        break;
+
+            //    case 404:
+            //        // 'Not Found' means the data you are requesting
+            //        //  cannot be found in the database
+
+            //        msg = "The Product you were requesting could not be found";
+
+            //        break;
+
+            //    default:
+            //        msg = "Status: " + request.status;
+            //        msg += "\n" + "Error Message: " +
+            //            request.statusText;
+            //        break;
+            //}
+            alert(msg);
+        };
         $(document).ready(function () {
-            $(".js-cancel-course").click(function (e) {
-                e.preventDefault();
-                var link = $(e.target);
-                bootbox.confirm("Are you sure to cancel?",
-                    function (result) {
-                        if (result) {
-                            $.ajax({
-                                url: "/api/courses/" + link.attr("data-course-id"),
-                                method: "DELETE"
-                            })
-                            .done(function () {
-                                link.parents("li").fadeOut(function () {
-                                    $(this).remove();
-                                });
-                            })
-                            .fail(function () {
-                                alert("Something failed!");
-                            });
-                        }
+            $(".js-toggle-attendance").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    })
+                    //.fail(function () {
+                    //    alert("Khóa học này đã đăng ký rồi, vui lòng chọn khóa học khác!");
+                    //});
+                    .fail(function (request, message, error) {
+                        handleException(request, message, error);
+                    });
+            });
+            $(".js-toggle-follow").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/following", { followeeId: button.attr("data-user-id") })
+                    .done(function () {
+                        location.reload();
+                        return false;
+                        /*button.text("Following");*/
+                    })
+                    .fail(function (request, message, error) {
+                        handleException(request, message, error);
                     });
             });
         });

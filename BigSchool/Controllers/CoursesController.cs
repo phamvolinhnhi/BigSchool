@@ -59,14 +59,18 @@ namespace BigSchool.Controllers
             var courses = _dbContext.Attendances
                 .Where(a => a.AttendeeId == userId)
                 .Select(a => a.Course)
+                .OrderBy(l => l.DateTime)
                 .Include(l => l.Lecturer)
                 .Include(l => l.Category)
                 .ToList();
             foreach (Course i in courses)
             {
+                Attendance find = _dbContext.Attendances.FirstOrDefault(p => p.CourseId == i.Id && p.AttendeeId == userId);
                 Following findF = _dbContext.Followings.FirstOrDefault(p => p.FolloweeId == i.LecturerId && p.FollowerId == userId);
-                if (findF != null)
+                if (findF == null)
                     i.Lecturer.isFollowing = true;
+                if (find != null)
+                    i.isShowGoing = true;
             }
             var viewModel = new CourseViewModel
             {
@@ -82,12 +86,30 @@ namespace BigSchool.Controllers
             var userId = User.Identity.GetUserId();
             var follows = _dbContext.Followings
                 .Where(a => a.FollowerId == userId)
-                .Select(a => a.Followee)
                 .ToList();
-            var viewModel = new FollowingViewModel
+            var courses = new List<Course>();
+            foreach(Following temp in follows)
             {
-                Lecturer = follows,
-                ShowAction = User.Identity.IsAuthenticated,
+                courses = _dbContext.Courses
+                    .Where(c => c.LecturerId == temp.FolloweeId && c.DateTime > DateTime.Now && c.isCanceled != true)
+                    .OrderBy(c => c.DateTime)
+                    .Include(c => c.Lecturer)
+                    .Include(c => c.Category)
+                    .ToList();
+            }
+            foreach (Course i in courses)
+            {
+                Attendance find = _dbContext.Attendances.FirstOrDefault(p => p.CourseId == i.Id && p.AttendeeId == userId);
+                Following findF = _dbContext.Followings.FirstOrDefault(p => p.FolloweeId == i.LecturerId && p.FollowerId == userId);
+                if (findF == null)
+                    i.Lecturer.isFollowing = true;
+                if (find != null)
+                    i.isShowGoing = true;
+            }
+            var viewModel = new CourseViewModel
+            {
+                UpcommingCourses = courses,
+                ShowAction = User.Identity.IsAuthenticated
             };
             return View(viewModel);
         }

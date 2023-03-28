@@ -31,7 +31,7 @@ namespace BigSchool.Controllers
             {
                 Attendance find = _dbContext.Attendances.FirstOrDefault(p => p.CourseId == i.Id && p.AttendeeId == loginUser);
                 Following findF = _dbContext.Followings.FirstOrDefault(p => p.FolloweeId == i.LecturerId && p.FollowerId == loginUser);
-                if(findF != null)
+                if(findF == null)
                     i.Lecturer.isFollowing = true;
                 if(find != null)
                     i.isShowGoing = true;
@@ -44,18 +44,5 @@ namespace BigSchool.Controllers
             return View(viewModel);
         }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
     }
 }
